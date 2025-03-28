@@ -4,6 +4,7 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 
 interface SubjectCardProps {
   subject: {
@@ -39,8 +40,10 @@ const SubjectCard = ({ subject }: SubjectCardProps) => {
           </p>
         </CardContent>
         <CardFooter className="p-4 pt-0 flex justify-end">
-          <Button variant="ghost" size="sm" className="text-xs">
-            View <ArrowRight className="ml-1 h-3 w-3" />
+          <Button variant="ghost" size="sm" className="text-xs" asChild>
+            <Link to={`/subject/${subject.id}`}>
+              View <ArrowRight className="ml-1 h-3 w-3" />
+            </Link>
           </Button>
         </CardFooter>
       </Card>

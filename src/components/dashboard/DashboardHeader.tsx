@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 
 interface DashboardHeaderProps {
   greeting: string;
@@ -11,12 +12,10 @@ interface DashboardHeaderProps {
 
 const DashboardHeader = ({ greeting, studentInfo }: DashboardHeaderProps) => {
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const handleReportClick = () => {
-    toast({
-      title: "Generating Report",
-      description: "Your full academic report is being prepared",
-    });
+    navigate("/my-report");
   };
 
   return (

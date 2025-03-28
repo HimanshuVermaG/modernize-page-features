@@ -9,6 +9,7 @@ import NotFound from "./pages/NotFound";
 import SubjectDetails from "./pages/SubjectDetails";
 import QuestionsPage from "./pages/QuestionsPage";
 import QuizResults from "./pages/QuizResults";
+import MyReport from "./pages/MyReport";
 
 // Create a client for React Query
 const queryClient = new QueryClient();
@@ -29,6 +30,7 @@ const App = () => (
           <Route path="/subject/:subjectId" element={<SubjectDetails />} />
           <Route path="/questions/:subjectId/:setId" element={<QuestionsPage />} />
           <Route path="/quiz-results" element={<QuizResults />} />
+          <Route path="/my-report" element={<MyReport />} />
           
           {/* 404 fallback */}
           <Route path="*" element={<NotFound />} />

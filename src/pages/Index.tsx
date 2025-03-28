@@ -1,24 +1,14 @@
 
 import { useEffect, useState } from "react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
-import { ArrowRight, Book, Calendar, Check, Home, Info } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
-import { motion } from "framer-motion";
-import SubjectCard from "@/components/SubjectCard";
-import TestCard from "@/components/TestCard";
-import ResultCard from "@/components/ResultCard";
 import { Navbar } from "@/components/Navbar";
-import UpcomingEvents from "@/components/UpcomingEvents";
-import { SubjectProgress } from "@/components/SubjectProgress";
+import UpcomingEvents from "@/components/dashboard/UpcomingEvents";
+import DashboardHeader from "@/components/dashboard/DashboardHeader";
+import ProgressOverview from "@/components/dashboard/ProgressOverview";
+import DashboardContent from "@/components/dashboard/DashboardContent";
 
 const StudentDashboard = () => {
-  const { toast } = useToast();
   const [greeting, setGreeting] = useState("");
-  const [progress, setProgress] = useState(75);
+  const [progress, setProgress] = useState(0);
   
   useEffect(() => {
     const hour = new Date().getHours();
@@ -30,13 +20,6 @@ const StudentDashboard = () => {
     const timer = setTimeout(() => setProgress(75), 500);
     return () => clearTimeout(timer);
   }, []);
-
-  const handleReportClick = () => {
-    toast({
-      title: "Generating Report",
-      description: "Your full academic report is being prepared",
-    });
-  };
 
   const subjects = [
     { id: 1, name: "Math", icon: "📐", color: "bg-green-100 dark:bg-green-900", questions: 45 },
@@ -57,92 +40,34 @@ const StudentDashboard = () => {
     { id: 3, name: "Math Set - I", score: 19, maxScore: 20, grade: "A+" },
   ];
 
+  const subjectProgress = [
+    { name: "Math", progress: 85 },
+    { name: "English", progress: 70 },
+    { name: "Hindi", progress: 65 },
+    { name: "G.S.", progress: 80 },
+  ];
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <Navbar />
       
       <div className="container mx-auto px-4 py-6">
-        <div className="flex justify-between items-center mb-6">
-          <div>
-            <motion.h1 
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="text-3xl font-bold text-gray-800 dark:text-white"
-            >
-              {greeting}, Student!
-            </motion.h1>
-            <p className="text-gray-500 dark:text-gray-400">Class 6 - Section A</p>
-          </div>
-          
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            whileHover={{ scale: 1.05 }}
-            transition={{ duration: 0.2 }}
-          >
-            <Button 
-              onClick={handleReportClick}
-              className="bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600"
-            >
-              My Report <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
-          </motion.div>
-        </div>
+        <DashboardHeader 
+          greeting={greeting} 
+          studentInfo="Class 6 - Section A" 
+        />
         
         <div className="mb-6">
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle>Overall Progress</CardTitle>
-              <CardDescription>Your academic journey this semester</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <span className="text-sm font-medium">75% Complete</span>
-                  <span className="text-sm text-gray-500">Target: 90%</span>
-                </div>
-                <Progress value={progress} className="h-2" />
-              </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
-                <SubjectProgress subject="Math" progress={85} />
-                <SubjectProgress subject="English" progress={70} />
-                <SubjectProgress subject="Hindi" progress={65} />
-                <SubjectProgress subject="G.S." progress={80} />
-              </div>
-            </CardContent>
-          </Card>
+          <ProgressOverview progress={progress} subjects={subjectProgress} />
         </div>
         
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 space-y-6">
-            <Tabs defaultValue="subjects" className="w-full">
-              <TabsList className="grid w-full grid-cols-3 mb-4">
-                <TabsTrigger value="subjects">Question Sets</TabsTrigger>
-                <TabsTrigger value="practice">Practice Tests</TabsTrigger>
-                <TabsTrigger value="results">Results</TabsTrigger>
-              </TabsList>
-              
-              <TabsContent value="subjects" className="space-y-4">
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                  {subjects.map((subject) => (
-                    <SubjectCard key={subject.id} subject={subject} />
-                  ))}
-                </div>
-              </TabsContent>
-              
-              <TabsContent value="practice" className="space-y-4">
-                {tests.map((test) => (
-                  <TestCard key={test.id} test={test} />
-                ))}
-              </TabsContent>
-              
-              <TabsContent value="results" className="space-y-4">
-                {results.map((result) => (
-                  <ResultCard key={result.id} result={result} />
-                ))}
-              </TabsContent>
-            </Tabs>
+            <DashboardContent 
+              subjects={subjects} 
+              tests={tests} 
+              results={results} 
+            />
           </div>
           
           <div className="space-y-6">

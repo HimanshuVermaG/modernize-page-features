@@ -10,8 +10,13 @@ import SubjectDetails from "./pages/SubjectDetails";
 import QuestionsPage from "./pages/QuestionsPage";
 import QuizResults from "./pages/QuizResults";
 
+// Create a client for React Query
 const queryClient = new QueryClient();
 
+/**
+ * Main App Component
+ * Provides context providers and routing for the application
+ */
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
@@ -19,11 +24,13 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
+          {/* Main routes */}
           <Route path="/" element={<Index />} />
           <Route path="/subject/:subjectId" element={<SubjectDetails />} />
           <Route path="/questions/:subjectId/:setId" element={<QuestionsPage />} />
           <Route path="/quiz-results" element={<QuizResults />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+          
+          {/* 404 fallback */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

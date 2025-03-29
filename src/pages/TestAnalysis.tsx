@@ -84,14 +84,17 @@ const TestAnalysis = () => {
   
   return (
     <PageContainer>
-      <PageHeader title="Test Analysis">
-        <Button variant="outline" size="sm" asChild className="mr-2">
-          <Link to="/quiz-results">
-            <ArrowLeft className="h-4 w-4 mr-1" />
-            Back to Results
-          </Link>
-        </Button>
-      </PageHeader>
+      <PageHeader 
+        title="Test Analysis" 
+        action={
+          <Button variant="outline" size="sm" asChild className="mr-2">
+            <Link to="/quiz-results">
+              <ArrowLeft className="h-4 w-4 mr-1" />
+              Back to Results
+            </Link>
+          </Button>
+        }
+      />
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Left column - Overview */}

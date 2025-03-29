@@ -2,24 +2,12 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
-import { 
-  LineChart, 
-  Line, 
-  BarChart, 
-  Bar, 
-  PieChart, 
-  Pie, 
-  Cell, 
-  XAxis, 
-  YAxis, 
-  ResponsiveContainer,
-  Legend
-} from "recharts";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
-import { AspectRatio } from "@/components/ui/aspect-ratio";
+import LineChart from "@/components/charts/LineChart";
+import BarChart from "@/components/charts/BarChart";
+import PieChart from "@/components/charts/PieChart";
 
 interface SubjectAnalysisProps {
   subject: {
@@ -58,45 +46,14 @@ const DetailedSubjectAnalysis = ({ subject }: SubjectAnalysisProps) => {
           </TabsList>
           
           <TabsContent value="progress">
-            <AspectRatio ratio={16/4} className="mb-4">
-              <ChartContainer
-                config={{
-                  score: {
-                    theme: { light: subject.color, dark: subject.color },
-                    label: "Score",
-                  },
-                }}
-              >
-                <LineChart
-                  data={subject.progressData}
-                  margin={{ top: 5, right: 5, left: 5, bottom: 5 }}
-                >
-                  <XAxis 
-                    dataKey="week" 
-                    axisLine={false}
-                    tickLine={false}
-                    tick={{ fontSize: 12 }}
-                  />
-                  <YAxis 
-                    domain={[0, 100]} 
-                    axisLine={false}
-                    tickLine={false}
-                    tick={{ fontSize: 12 }}
-                  />
-                  <ChartTooltip
-                    content={<ChartTooltipContent/>}
-                  />
-                  <Line
-                    type="monotone"
-                    dataKey="score"
-                    stroke={subject.color}
-                    strokeWidth={2}
-                    dot={{ fill: subject.color }}
-                    activeDot={{ r: 6, fill: subject.color }}
-                  />
-                </LineChart>
-              </ChartContainer>
-            </AspectRatio>
+            <LineChart 
+              data={subject.progressData}
+              xAxisKey="week"
+              lines={[
+                { dataKey: "score", name: "Score", color: subject.color }
+              ]}
+              className="mb-4"
+            />
             <Button 
               variant="outline" 
               size="sm" 
@@ -108,45 +65,16 @@ const DetailedSubjectAnalysis = ({ subject }: SubjectAnalysisProps) => {
           </TabsContent>
           
           <TabsContent value="weak-areas">
-            <AspectRatio ratio={16/4} className="mb-4">
-              <ChartContainer
-                config={{
-                  score: {
-                    theme: { light: subject.color, dark: subject.color },
-                    label: "Score",
-                  },
-                }}
-              >
-                <BarChart
-                  data={subject.weakTopics}
-                  margin={{ top: 5, right: 5, left: 5, bottom: 20 }}
-                >
-                  <XAxis 
-                    dataKey="name" 
-                    axisLine={false}
-                    tickLine={false}
-                    tick={{ fontSize: 12 }}
-                    angle={-45}
-                    textAnchor="end"
-                    height={60}
-                  />
-                  <YAxis 
-                    domain={[0, 100]} 
-                    axisLine={false}
-                    tickLine={false}
-                    tick={{ fontSize: 12 }}
-                  />
-                  <ChartTooltip
-                    content={<ChartTooltipContent/>}
-                  />
-                  <Bar 
-                    dataKey="score" 
-                    fill={subject.color}
-                    radius={[4, 4, 0, 0]}
-                  />
-                </BarChart>
-              </ChartContainer>
-            </AspectRatio>
+            <BarChart 
+              data={subject.weakTopics}
+              xAxisKey="name"
+              bars={[
+                { dataKey: "score", name: "Score", color: subject.color }
+              ]}
+              className="mb-4"
+              xAxisAngle={-45}
+              xAxisHeight={60}
+            />
             <Button 
               variant="outline" 
               size="sm" 
@@ -158,34 +86,12 @@ const DetailedSubjectAnalysis = ({ subject }: SubjectAnalysisProps) => {
           </TabsContent>
           
           <TabsContent value="distribution">
-            <AspectRatio ratio={16/4} className="mb-4 flex justify-center">
-              <ChartContainer
-                config={{
-                  value: {
-                    label: "Distribution",
-                  },
-                }}
-              >
-                <PieChart>
-                  <Pie
-                    data={subject.quizDistribution}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={60}
-                    outerRadius={80}
-                    paddingAngle={2}
-                    dataKey="value"
-                    label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                    labelLine={false}
-                  >
-                    {subject.quizDistribution.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Pie>
-                  <ChartTooltip content={<ChartTooltipContent />} />
-                </PieChart>
-              </ChartContainer>
-            </AspectRatio>
+            <div className="flex justify-center mb-4">
+              <PieChart 
+                data={subject.quizDistribution}
+                className="h-[250px]"
+              />
+            </div>
             <Button 
               variant="outline" 
               size="sm" 

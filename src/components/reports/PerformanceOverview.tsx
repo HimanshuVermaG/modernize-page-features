@@ -2,9 +2,8 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
-import { Line, LineChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
 import { Trophy, TrendingUp } from "lucide-react";
+import LineChart from "@/components/charts/LineChart";
 
 interface PerformanceOverviewProps {
   score: number;
@@ -80,43 +79,12 @@ const PerformanceOverview = ({
           <CardTitle className="text-sm font-medium">Progress Over Time</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="h-[200px]">
-            <ChartContainer
-              config={{
-                score: { theme: { light: "#8B5CF6", dark: "#8B5CF6" } },
-              }}
-            >
-              <LineChart
-                data={progressData}
-                margin={{ top: 10, right: 10, bottom: 10, left: 10 }}
-              >
-                <XAxis 
-                  dataKey="month" 
-                  axisLine={false}
-                  tickLine={false}
-                  tick={{ fontSize: 12 }}
-                  dy={10}
-                />
-                <YAxis 
-                  domain={[0, 100]} 
-                  axisLine={false}
-                  tickLine={false}
-                  tick={{ fontSize: 12 }}
-                  dx={-10}
-                />
-                <ChartTooltip
-                  content={<ChartTooltipContent/>}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="score"
-                  strokeWidth={2}
-                  activeDot={{ r: 6, fill: "#8B5CF6" }}
-                  dot={{ r: 4, fill: "#8B5CF6" }}
-                />
-              </LineChart>
-            </ChartContainer>
-          </div>
+          <LineChart
+            data={progressData}
+            xAxisKey="month"
+            lines={[{ dataKey: "score", name: "Score", color: "#8B5CF6" }]}
+            className="h-[200px]"
+          />
         </CardContent>
       </Card>
     </div>

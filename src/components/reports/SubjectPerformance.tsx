@@ -2,8 +2,7 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
-import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
+import BarChart from "@/components/charts/BarChart";
 
 interface SubjectData {
   subject: string;
@@ -25,43 +24,13 @@ const SubjectPerformance = ({ data, showDetailed = false }: SubjectPerformancePr
       </CardHeader>
       <CardContent>
         <div className="h-[250px] mb-6">
-          <ChartContainer
-            config={{
-              score: {
-                theme: { light: "#8B5CF6", dark: "#8B5CF6" },
-                label: "Score",
-              },
-            }}
-          >
-            <BarChart
-              data={data}
-              margin={{ top: 10, right: 10, left: 10, bottom: 20 }}
-            >
-              <XAxis 
-                dataKey="subject" 
-                axisLine={false}
-                tickLine={false}
-                tick={{ fontSize: 12 }}
-                angle={-45}
-                textAnchor="end"
-                height={60}
-              />
-              <YAxis 
-                domain={[0, 100]} 
-                axisLine={false}
-                tickLine={false}
-                tick={{ fontSize: 12 }}
-              />
-              <ChartTooltip
-                content={<ChartTooltipContent/>}
-              />
-              <Bar 
-                dataKey="score" 
-                radius={[4, 4, 0, 0]} 
-                fill="#8B5CF6"
-              />
-            </BarChart>
-          </ChartContainer>
+          <BarChart 
+            data={data}
+            xAxisKey="subject"
+            bars={[{ dataKey: "score", name: "Score", color: "#8B5CF6" }]}
+            xAxisAngle={-45}
+            xAxisHeight={60}
+          />
         </div>
         
         {showDetailed && (

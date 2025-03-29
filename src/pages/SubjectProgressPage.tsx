@@ -5,21 +5,9 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
-import { 
-  LineChart, 
-  Line, 
-  AreaChart, 
-  Area, 
-  XAxis, 
-  YAxis,
-  Tooltip,
-  CartesianGrid,
-  ResponsiveContainer,
-  Legend
-} from "recharts";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import LineChart from "@/components/charts/LineChart";
+import AreaChart from "@/components/charts/AreaChart";
 
 const SubjectProgressPage = () => {
   const { subjectId } = useParams<{ subjectId: string }>();
@@ -86,54 +74,15 @@ const SubjectProgressPage = () => {
             </CardHeader>
             <CardContent>
               <div className="h-[300px]">
-                <ChartContainer
-                  config={{
-                    score: {
-                      theme: { light: subjectData.color, dark: subjectData.color },
-                      label: "Your Score",
-                    },
-                    avgScore: {
-                      theme: { light: "#94A3B8", dark: "#64748B" },
-                      label: "Class Average",
-                    }
-                  }}
-                >
-                  <LineChart
-                    data={subjectData.weeklyProgress}
-                    margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
-                  >
-                    <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" />
-                    <XAxis 
-                      dataKey="week" 
-                      tick={{ fontSize: 12 }}
-                    />
-                    <YAxis 
-                      domain={[0, 100]} 
-                      tick={{ fontSize: 12 }}
-                    />
-                    <ChartTooltip
-                      content={<ChartTooltipContent/>}
-                    />
-                    <Legend />
-                    <Line
-                      type="monotone"
-                      dataKey="score"
-                      name="Your Score"
-                      stroke={subjectData.color}
-                      strokeWidth={2}
-                      dot={{ r: 4, fill: subjectData.color }}
-                      activeDot={{ r: 6, fill: subjectData.color }}
-                    />
-                    <Line
-                      type="monotone"
-                      dataKey="avgScore"
-                      name="Class Average"
-                      stroke="#94A3B8"
-                      strokeWidth={2}
-                      dot={{ r: 4, fill: "#94A3B8" }}
-                    />
-                  </LineChart>
-                </ChartContainer>
+                <LineChart
+                  data={subjectData.weeklyProgress}
+                  xAxisKey="week"
+                  lines={[
+                    { dataKey: "score", name: "Your Score", color: subjectData.color },
+                    { dataKey: "avgScore", name: "Class Average", color: "#94A3B8" }
+                  ]}
+                  showGrid={true}
+                />
               </div>
             </CardContent>
           </Card>
@@ -144,66 +93,33 @@ const SubjectProgressPage = () => {
             </CardHeader>
             <CardContent>
               <div className="h-[300px]">
-                <ChartContainer
-                  config={{
-                    initial: {
-                      theme: { light: "#CBD5E1", dark: "#64748B" },
-                      label: "Initial",
+                <AreaChart
+                  data={subjectData.topicProgress}
+                  xAxisKey="topic"
+                  areas={[
+                    { 
+                      dataKey: "initial", 
+                      name: "Initial Score", 
+                      color: "#CBD5E1", 
+                      stackId: "1" 
                     },
-                    current: {
-                      theme: { light: subjectData.color, dark: subjectData.color },
-                      label: "Current",
+                    { 
+                      dataKey: "current", 
+                      name: "Current Score", 
+                      color: subjectData.color, 
+                      stackId: "2" 
                     },
-                    target: {
-                      theme: { light: "#94A3B8", dark: "#94A3B8" },
-                      label: "Target",
+                    { 
+                      dataKey: "target", 
+                      name: "Target Score", 
+                      color: "#94A3B8", 
+                      stackId: "3",
+                      fillOpacity: 0,
+                      strokeDasharray: "4 4" 
                     }
-                  }}
-                >
-                  <AreaChart
-                    data={subjectData.topicProgress}
-                    margin={{ top: 20, right: 30, left: 20, bottom: 20 }}
-                  >
-                    <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" />
-                    <XAxis 
-                      dataKey="topic" 
-                      tick={{ fontSize: 12 }}
-                    />
-                    <YAxis 
-                      domain={[0, 100]} 
-                      tick={{ fontSize: 12 }}
-                    />
-                    <ChartTooltip
-                      content={<ChartTooltipContent/>}
-                    />
-                    <Legend />
-                    <Area
-                      type="monotone"
-                      dataKey="initial"
-                      name="Initial Score"
-                      stackId="1"
-                      stroke="#CBD5E1"
-                      fill="#CBD5E1"
-                    />
-                    <Area
-                      type="monotone"
-                      dataKey="current"
-                      name="Current Score"
-                      stackId="2"
-                      stroke={subjectData.color}
-                      fill={subjectData.color}
-                    />
-                    <Area
-                      type="monotone"
-                      dataKey="target"
-                      name="Target Score"
-                      stackId="3"
-                      stroke="#94A3B8"
-                      fill="none"
-                      strokeDasharray="4 4"
-                    />
-                  </AreaChart>
-                </ChartContainer>
+                  ]}
+                  showGrid={true}
+                />
               </div>
             </CardContent>
           </Card>

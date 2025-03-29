@@ -5,21 +5,8 @@ import { Navbar } from "@/components/Navbar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { AspectRatio } from "@/components/ui/aspect-ratio";
-import { 
-  BarChart, 
-  Bar, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
-  Legend
-} from 'recharts';
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+import BarChart from "@/components/charts/BarChart";
+import PieChart from "@/components/charts/PieChart";
 
 const QuizResultDetails = () => {
   const { resultId } = useParams();
@@ -52,8 +39,6 @@ const QuizResultDetails = () => {
     ]
   };
   
-  const COLORS = ["#10B981", "#EF4444"];
-  
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <Navbar />
@@ -77,35 +62,15 @@ const QuizResultDetails = () => {
                 <CardTitle className="text-lg">Performance by Topic</CardTitle>
               </CardHeader>
               <CardContent>
-                <AspectRatio ratio={16/4} className="bg-card rounded-md overflow-hidden">
-                  <ChartContainer
-                    config={{
-                      correct: { 
-                        theme: { light: "#10B981", dark: "#10B981" },
-                        label: "Correct" 
-                      },
-                      incorrect: { 
-                        theme: { light: "#EF4444", dark: "#EF4444" },
-                        label: "Incorrect" 
-                      },
-                    }}
-                  >
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart
-                        data={resultData.topicPerformance}
-                        margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-                        barGap={2}
-                      >
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="name" />
-                        <YAxis />
-                        <ChartTooltip content={<ChartTooltipContent />} />
-                        <Bar dataKey="correct" stackId="a" fill="#10B981" />
-                        <Bar dataKey="incorrect" stackId="a" fill="#EF4444" />
-                      </BarChart>
-                    </ResponsiveContainer>
-                  </ChartContainer>
-                </AspectRatio>
+                <BarChart
+                  data={resultData.topicPerformance}
+                  xAxisKey="name"
+                  bars={[
+                    { dataKey: "correct", name: "Correct", color: "#10B981" },
+                    { dataKey: "incorrect", name: "Incorrect", color: "#EF4444" }
+                  ]}
+                  showGrid={true}
+                />
               </CardContent>
             </Card>
             
@@ -152,27 +117,10 @@ const QuizResultDetails = () => {
                   <span className="font-medium">{resultData.correctAnswers}/{resultData.totalQuestions} correct</span>
                 </div>
                 
-                <AspectRatio ratio={16/4} className="mt-4">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                      <Pie
-                        data={resultData.answerDistribution}
-                        cx="50%"
-                        cy="50%"
-                        labelLine={false}
-                        label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                        outerRadius={80}
-                        fill="#8884d8"
-                        dataKey="value"
-                      >
-                        {resultData.answerDistribution.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={entry.color} />
-                        ))}
-                      </Pie>
-                      <Legend />
-                    </PieChart>
-                  </ResponsiveContainer>
-                </AspectRatio>
+                <PieChart 
+                  data={resultData.answerDistribution}
+                  showLegend={true}
+                />
               </CardContent>
             </Card>
             

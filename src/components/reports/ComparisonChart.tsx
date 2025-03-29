@@ -1,10 +1,8 @@
 
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartLegend, ChartLegendContent } from "@/components/ui/chart";
-import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Cell } from "recharts";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { AspectRatio } from "@/components/ui/aspect-ratio";
+import BarChart from "@/components/charts/BarChart";
 
 interface RankingData {
   name: string;
@@ -24,41 +22,13 @@ const ComparisonChart = ({ data }: ComparisonChartProps) => {
           <CardTitle className="text-sm font-medium">Performance Comparison</CardTitle>
         </CardHeader>
         <CardContent>
-          <AspectRatio ratio={16/4}>
-            <ChartContainer
-              config={{
-                score: { label: "Score" },
-              }}
-            >
-              <BarChart
-                data={data}
-                margin={{ top: 20, right: 20, left: 20, bottom: 20 }}
-              >
-                <XAxis 
-                  dataKey="name" 
-                  axisLine={false}
-                  tickLine={false}
-                />
-                <YAxis 
-                  domain={[0, 100]} 
-                  axisLine={false}
-                  tickLine={false}
-                />
-                <ChartTooltip
-                  content={<ChartTooltipContent />}
-                />
-                <Bar 
-                  dataKey="score" 
-                  radius={[4, 4, 0, 0]}
-                >
-                  {data.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.fill} />
-                  ))}
-                </Bar>
-                <ChartLegend content={<ChartLegendContent />} />
-              </BarChart>
-            </ChartContainer>
-          </AspectRatio>
+          <BarChart 
+            data={data}
+            xAxisKey="name"
+            bars={[{ dataKey: "score", name: "Score" }]}
+            useCells={true}
+            colorKey="fill"
+          />
         </CardContent>
       </Card>
       

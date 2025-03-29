@@ -5,22 +5,10 @@ import { Navbar } from "@/components/Navbar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChevronLeft, ArrowRight, Clock, BarChart2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Progress } from "@/components/ui/progress";
-import { 
-  LineChart, 
-  Line, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  ResponsiveContainer,
-  ComposedChart,
-  Bar,
-  Scatter
-} from 'recharts';
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import PDFResources from "@/components/quiz/PDFResources";
+import LineChart from "@/components/charts/LineChart";
+import ComposedChart from "@/components/charts/ComposedChart";
 
 const TestAnalysis = () => {
   const { testId } = useParams();
@@ -73,6 +61,20 @@ const TestAnalysis = () => {
         url: "https://www.example.com/pdfs/word-problems.pdf"
       }
     ]
+  };
+  
+  // Custom shape renderer for the scatter chart
+  const renderScatterShape = (props: any) => {
+    const { cx, cy } = props;
+    const entry = props.payload;
+    return (
+      <circle 
+        cx={cx} 
+        cy={cy} 
+        r={6} 
+        fill={entry.correct ? "#10B981" : "#EF4444"} 
+      />
+    );
   };
   
   return (
@@ -161,36 +163,12 @@ const TestAnalysis = () => {
                 <CardTitle className="text-lg">Performance Over Time</CardTitle>
               </CardHeader>
               <CardContent>
-                <AspectRatio ratio={16/4} className="bg-card rounded-md overflow-hidden">
-                  <ChartContainer
-                    config={{
-                      score: { 
-                        theme: { light: "#8B5CF6", dark: "#8B5CF6" },
-                        label: "Score (%)" 
-                      }
-                    }}
-                  >
-                    <ResponsiveContainer width="100%" height="100%">
-                      <LineChart
-                        data={testData.performanceOverTime}
-                        margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-                      >
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="attempt" />
-                        <YAxis domain={[0, 100]} />
-                        <ChartTooltip content={<ChartTooltipContent />} />
-                        <Line
-                          type="monotone"
-                          dataKey="score"
-                          stroke="#8B5CF6"
-                          strokeWidth={2}
-                          dot={{ fill: "#8B5CF6", r: 6 }}
-                          activeDot={{ r: 8 }}
-                        />
-                      </LineChart>
-                    </ResponsiveContainer>
-                  </ChartContainer>
-                </AspectRatio>
+                <LineChart
+                  data={testData.performanceOverTime}
+                  xAxisKey="attempt"
+                  lines={[{ dataKey: "score", name: "Score (%)", color: "#8B5CF6" }]}
+                  showGrid={true}
+                />
               </CardContent>
             </Card>
             
@@ -199,58 +177,17 @@ const TestAnalysis = () => {
                 <CardTitle className="text-lg">Time Spent vs Question Difficulty</CardTitle>
               </CardHeader>
               <CardContent>
-                <AspectRatio ratio={16/4} className="bg-card rounded-md overflow-hidden">
-                  <ChartContainer
-                    config={{
-                      time: { 
-                        theme: { light: "#3B82F6", dark: "#3B82F6" },
-                        label: "Time (seconds)" 
-                      }
-                    }}
-                  >
-                    <ResponsiveContainer width="100%" height="100%">
-                      <ComposedChart
-                        data={testData.questionTimeData}
-                        margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-                      >
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="id" label={{ value: 'Question Number', position: 'insideBottom', offset: -5 }} />
-                        <YAxis label={{ value: 'Time (seconds)', angle: -90, position: 'insideLeft' }} />
-                        <ChartTooltip 
-                          content={<ChartTooltipContent />}
-                          formatter={(value, name, props) => {
-                            if (name === 'time') return [`${value}s`, 'Time Spent'];
-                            return [value, name];
-                          }}
-                        />
-                        <Bar 
-                          dataKey="time" 
-                          fill="#3B82F6" 
-                          radius={[4, 4, 0, 0]}
-                          name="time"
-                        />
-                        <Scatter
-                          dataKey="time"
-                          fill="#10B981"
-                          shape={(props) => {
-                            const { cx, cy } = props;
-                            const entry = props.payload;
-                            // Use shape to conditionally render based on the correct property
-                            return (
-                              <circle 
-                                cx={cx} 
-                                cy={cy} 
-                                r={6} 
-                                fill={entry.correct ? "#10B981" : "#EF4444"} 
-                              />
-                            );
-                          }}
-                          name="result"
-                        />
-                      </ComposedChart>
-                    </ResponsiveContainer>
-                  </ChartContainer>
-                </AspectRatio>
+                <ComposedChart
+                  data={testData.questionTimeData}
+                  xAxisKey="id"
+                  bars={[{ dataKey: "time", name: "Time (seconds)", color: "#3B82F6" }]}
+                  scatters={[{ 
+                    dataKey: "time", 
+                    name: "result", 
+                    renderDot: renderScatterShape
+                  }]}
+                  showGrid={true}
+                />
                 <div className="flex justify-center mt-4 gap-4 text-sm">
                   <div className="flex items-center">
                     <div className="w-3 h-3 rounded-full bg-green-500 mr-1"></div>

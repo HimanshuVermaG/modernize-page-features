@@ -39,7 +39,8 @@ interface ComposedChartProps {
   scatters?: Array<{
     dataKey: string;
     name: string;
-    renderDot?: (props: any) => React.ReactNode;
+    color?: string; // Add optional color property
+    renderDot?: (props: any) => React.ReactElement; // Change return type to ReactElement
   }>;
   aspectRatio?: number;
   showGrid?: boolean;
@@ -62,10 +63,15 @@ const ComposedChart = ({
   // Create config for ChartContainer
   const chartConfig = [...bars, ...lines, ...areas, ...scatters].reduce((config, item) => {
     if (!item.dataKey) return config;
+    
+    // Check if item has color property before using it
+    const hasColor = 'color' in item;
+    const itemColor = hasColor ? item.color : undefined;
+    
     return {
       ...config,
       [item.dataKey]: {
-        theme: item.color ? { light: item.color, dark: item.color } : undefined,
+        theme: itemColor ? { light: itemColor, dark: itemColor } : undefined,
         label: item.name,
       }
     };
@@ -125,7 +131,12 @@ const ComposedChart = ({
                 key={`scatter-${index}`}
                 dataKey={scatter.dataKey}
                 name={scatter.name}
-                shape={scatter.renderDot}
+                fill={scatter.color} // Use color if provided
+                shape={scatter.renderDot ? (props) => {
+                  // Ensure renderDot returns a React element
+                  const element = scatter.renderDot?.(props);
+                  return element || null;
+                } : undefined}
               />
             ))}
           </RechartsComposedChart>

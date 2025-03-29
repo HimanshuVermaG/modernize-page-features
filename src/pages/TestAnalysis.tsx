@@ -64,7 +64,7 @@ const TestAnalysis = () => {
   };
   
   // Custom shape renderer for the scatter chart
-  const renderScatterShape = (props: any) => {
+  const renderScatterShape = (props: any): React.ReactElement => {
     const { cx, cy } = props;
     const entry = props.payload;
     return (
@@ -183,7 +183,7 @@ const TestAnalysis = () => {
                   bars={[{ dataKey: "time", name: "Time (seconds)", color: "#3B82F6" }]}
                   scatters={[{ 
                     dataKey: "time", 
-                    name: "result", 
+                    name: "result",
                     renderDot: renderScatterShape
                   }]}
                   showGrid={true}

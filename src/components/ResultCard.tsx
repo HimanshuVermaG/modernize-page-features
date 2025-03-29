@@ -2,6 +2,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
 interface ResultCardProps {
   result: {
@@ -14,6 +15,7 @@ interface ResultCardProps {
 }
 
 const ResultCard = ({ result }: ResultCardProps) => {
+  const navigate = useNavigate();
   const percentage = (result.score / result.maxScore) * 100;
   
   const getBadgeColor = (grade: string) => {
@@ -35,6 +37,8 @@ const ResultCard = ({ result }: ResultCardProps) => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, delay: result.id * 0.1 }}
+      onClick={() => navigate(`/quiz-result/${result.id}`)}
+      className="cursor-pointer"
     >
       <Card className="overflow-hidden hover:shadow-md transition-shadow duration-300">
         <CardContent className="p-6">

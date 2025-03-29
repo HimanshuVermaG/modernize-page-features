@@ -3,6 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { motion } from "framer-motion";
 import { formatDistanceToNow } from "date-fns";
+import { useNavigate } from "react-router-dom";
 
 interface TestCardProps {
   test: {
@@ -15,6 +16,7 @@ interface TestCardProps {
 }
 
 const TestCard = ({ test }: TestCardProps) => {
+  const navigate = useNavigate();
   const percentage = (test.score / test.maxScore) * 100;
   const dateFormatted = formatDistanceToNow(new Date(test.date), { addSuffix: true });
   
@@ -23,6 +25,8 @@ const TestCard = ({ test }: TestCardProps) => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, delay: test.id * 0.1 }}
+      onClick={() => navigate(`/test-analysis/${test.id}`)}
+      className="cursor-pointer"
     >
       <Card className="overflow-hidden hover:shadow-md transition-shadow duration-300">
         <CardContent className="p-6">

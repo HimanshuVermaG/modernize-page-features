@@ -6,6 +6,7 @@ import DashboardHeader from "@/components/dashboard/DashboardHeader";
 import ProgressOverview from "@/components/dashboard/ProgressOverview";
 import DashboardContent from "@/components/dashboard/DashboardContent";
 import PersonalizedRecommendations from "@/components/dashboard/PersonalizedRecommendations";
+import ImprovementPlanPreview from "@/components/dashboard/ImprovementPlanPreview";
 
 const StudentDashboard = () => {
   const [greeting, setGreeting] = useState("");
@@ -74,6 +75,14 @@ const StudentDashboard = () => {
     }
   ];
 
+  // Mock data for the improvement plan
+  const improvementPlanTopics = [
+    { id: 1, name: "Algebraic Equations", progress: 65, difficulty: "Medium" as const },
+    { id: 2, name: "Geometry Basics", progress: 40, difficulty: "Hard" as const },
+    { id: 3, name: "Number Theory", progress: 85, difficulty: "Easy" as const },
+    { id: 4, name: "Statistical Analysis", progress: 30, difficulty: "Hard" as const },
+  ];
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <Navbar />
@@ -96,7 +105,14 @@ const StudentDashboard = () => {
               results={results} 
             />
             
-            <PersonalizedRecommendations recommendations={recommendations} />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <PersonalizedRecommendations recommendations={recommendations} />
+              <ImprovementPlanPreview 
+                subject="Mathematics" 
+                subjectId={1} 
+                topics={improvementPlanTopics} 
+              />
+            </div>
           </div>
           
           <div className="space-y-6">

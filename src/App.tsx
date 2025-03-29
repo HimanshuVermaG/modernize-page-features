@@ -12,6 +12,9 @@ import QuizResults from "./pages/QuizResults";
 import MyReport from "./pages/MyReport";
 import ImprovementPlanPage from "./pages/ImprovementPlanPage";
 import SubjectProgressPage from "./pages/SubjectProgressPage";
+import QuizDetails from "./pages/QuizDetails";
+import QuizResultDetails from "./pages/QuizResultDetails";
+import TestAnalysis from "./pages/TestAnalysis";
 
 // Create a client for React Query
 const queryClient = new QueryClient();
@@ -37,6 +40,9 @@ const App = () => (
           {/* New routes for detailed features */}
           <Route path="/improvement-plan/:subjectId" element={<ImprovementPlanPage />} />
           <Route path="/subject-progress/:subjectId" element={<SubjectProgressPage />} />
+          <Route path="/quiz/:subjectId/:quizId" element={<QuizDetails />} />
+          <Route path="/quiz-result/:resultId" element={<QuizResultDetails />} />
+          <Route path="/test-analysis/:testId" element={<TestAnalysis />} />
           
           {/* 404 fallback */}
           <Route path="*" element={<NotFound />} />

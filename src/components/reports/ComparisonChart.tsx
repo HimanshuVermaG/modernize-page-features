@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartLegend, ChartLegendContent } from "@/components/ui/chart";
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Cell } from "recharts";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
 
 interface RankingData {
   name: string;
@@ -23,7 +24,7 @@ const ComparisonChart = ({ data }: ComparisonChartProps) => {
           <CardTitle className="text-sm font-medium">Performance Comparison</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="h-[250px]">
+          <AspectRatio ratio={16/4}>
             <ChartContainer
               config={{
                 score: { label: "Score" },
@@ -57,39 +58,42 @@ const ComparisonChart = ({ data }: ComparisonChartProps) => {
                 <ChartLegend content={<ChartLegendContent />} />
               </BarChart>
             </ChartContainer>
-          </div>
+          </AspectRatio>
         </CardContent>
       </Card>
       
       <Card>
         <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-medium">Detailed Comparison</CardTitle>
+          <CardTitle className="text-sm font-medium">Detailed Statistics</CardTitle>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Category</TableHead>
-                <TableHead className="text-right">Score</TableHead>
-                <TableHead className="text-right">Percentile</TableHead>
+                <TableHead>Comparison</TableHead>
+                <TableHead>Score</TableHead>
+                <TableHead className="text-right">Difference</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              <TableRow>
-                <TableCell className="font-medium">You</TableCell>
-                <TableCell className="text-right">{data[0].score}%</TableCell>
-                <TableCell className="text-right">78th</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell className="font-medium">Class Average</TableCell>
-                <TableCell className="text-right">{data[1].score}%</TableCell>
-                <TableCell className="text-right">50th</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell className="font-medium">Top Performer</TableCell>
-                <TableCell className="text-right">{data[2].score}%</TableCell>
-                <TableCell className="text-right">99th</TableCell>
-              </TableRow>
+              {data.map((entry, index) => {
+                const baseLine = data.find(item => item.name === "You")?.score || 0;
+                const difference = entry.name !== "You" ? entry.score - baseLine : 0;
+                
+                return (
+                  <TableRow key={index}>
+                    <TableCell className="font-medium">{entry.name}</TableCell>
+                    <TableCell>{entry.score}%</TableCell>
+                    <TableCell className="text-right">
+                      {entry.name !== "You" && (
+                        <span className={difference >= 0 ? "text-green-500" : "text-red-500"}>
+                          {difference > 0 ? "+" : ""}{difference}%
+                        </span>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
             </TableBody>
           </Table>
         </CardContent>

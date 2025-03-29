@@ -1,18 +1,21 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { Navbar } from "@/components/Navbar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import PerformanceOverview from "@/components/reports/PerformanceOverview";
 import SubjectPerformance from "@/components/reports/SubjectPerformance";
 import RecentResults from "@/components/reports/RecentResults";
 import ComparisonChart from "@/components/reports/ComparisonChart";
+import DetailedSubjectAnalysis from "@/components/reports/DetailedSubjectAnalysis";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const MyReport = () => {
   const navigate = useNavigate();
+  const [selectedSubject, setSelectedSubject] = useState("1");
   
   // Sample data - in a real app, this would come from an API
   const studentData = {
@@ -44,8 +47,87 @@ const MyReport = () => {
       { month: "Mar", score: 72 },
       { month: "Apr", score: 75 },
       { month: "May", score: 78 },
+    ],
+    subjects: [
+      {
+        id: 1,
+        name: "Mathematics",
+        score: 85,
+        color: "#3B82F6",
+        weakTopics: [
+          { name: "Algebra", score: 70 },
+          { name: "Geometry", score: 65 },
+          { name: "Calculus", score: 60 },
+          { name: "Statistics", score: 75 },
+        ],
+        progressData: [
+          { week: "Week 1", score: 65 },
+          { week: "Week 2", score: 70 },
+          { week: "Week 3", score: 75 },
+          { week: "Week 4", score: 80 },
+          { week: "Week 5", score: 85 },
+        ],
+        quizDistribution: [
+          { name: "Excellent", value: 60, color: "#10B981" },
+          { name: "Good", value: 20, color: "#3B82F6" },
+          { name: "Average", value: 15, color: "#F59E0B" },
+          { name: "Poor", value: 5, color: "#EF4444" },
+        ],
+      },
+      {
+        id: 2,
+        name: "English",
+        score: 72,
+        color: "#10B981",
+        weakTopics: [
+          { name: "Grammar", score: 65 },
+          { name: "Vocabulary", score: 70 },
+          { name: "Comprehension", score: 75 },
+          { name: "Writing", score: 60 },
+        ],
+        progressData: [
+          { week: "Week 1", score: 60 },
+          { week: "Week 2", score: 65 },
+          { week: "Week 3", score: 68 },
+          { week: "Week 4", score: 70 },
+          { week: "Week 5", score: 72 },
+        ],
+        quizDistribution: [
+          { name: "Excellent", value: 40, color: "#10B981" },
+          { name: "Good", value: 30, color: "#3B82F6" },
+          { name: "Average", value: 20, color: "#F59E0B" },
+          { name: "Poor", value: 10, color: "#EF4444" },
+        ],
+      },
+      {
+        id: 3,
+        name: "Science",
+        score: 80,
+        color: "#8B5CF6",
+        weakTopics: [
+          { name: "Physics", score: 75 },
+          { name: "Chemistry", score: 70 },
+          { name: "Biology", score: 85 },
+          { name: "Earth Science", score: 80 },
+        ],
+        progressData: [
+          { week: "Week 1", score: 70 },
+          { week: "Week 2", score: 73 },
+          { week: "Week 3", score: 75 },
+          { week: "Week 4", score: 78 },
+          { week: "Week 5", score: 80 },
+        ],
+        quizDistribution: [
+          { name: "Excellent", value: 50, color: "#10B981" },
+          { name: "Good", value: 30, color: "#3B82F6" },
+          { name: "Average", value: 15, color: "#F59E0B" },
+          { name: "Poor", value: 5, color: "#EF4444" },
+        ],
+      },
     ]
   };
+  
+  const currentSubject = studentData.subjects.find(s => s.id.toString() === selectedSubject) || studentData.subjects[0];
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -72,6 +154,7 @@ const MyReport = () => {
                 <TabsTrigger value="overview">Overview</TabsTrigger>
                 <TabsTrigger value="subjects">Subjects</TabsTrigger>
                 <TabsTrigger value="comparison">Comparison</TabsTrigger>
+                <TabsTrigger value="detailed">Detailed Analysis</TabsTrigger>
               </TabsList>
               
               <TabsContent value="overview" className="space-y-6">
@@ -87,22 +170,102 @@ const MyReport = () => {
               
               <TabsContent value="subjects" className="space-y-6">
                 <SubjectPerformance data={studentData.subjectPerformance} showDetailed={true} />
+                
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                  {studentData.subjects.map(subject => (
+                    <Card key={subject.id} className="overflow-hidden">
+                      <CardHeader className="pb-2">
+                        <div className="flex justify-between items-center">
+                          <CardTitle className="text-sm font-medium">{subject.name}</CardTitle>
+                          <div className="flex items-center">
+                            <span className={`h-2 w-2 rounded-full mr-1`} style={{ backgroundColor: subject.color }}></span>
+                            <span className="text-sm">{subject.score}%</span>
+                          </div>
+                        </div>
+                      </CardHeader>
+                      <CardContent className="pt-0">
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="w-full"
+                          onClick={() => navigate(`/subject-progress/${subject.id}`)}
+                        >
+                          View Progress
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
               </TabsContent>
               
               <TabsContent value="comparison" className="space-y-6">
                 <ComparisonChart data={studentData.rankingData} />
+              </TabsContent>
+              
+              <TabsContent value="detailed" className="space-y-6">
+                <div className="flex items-center space-x-2 mb-4">
+                  <span className="text-sm font-medium">Select Subject:</span>
+                  <Select value={selectedSubject} onValueChange={setSelectedSubject}>
+                    <SelectTrigger className="w-[180px]">
+                      <SelectValue placeholder="Select Subject" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {studentData.subjects.map(subject => (
+                        <SelectItem key={subject.id} value={subject.id.toString()}>
+                          {subject.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <DetailedSubjectAnalysis subject={currentSubject} />
+                
+                <div className="flex justify-end">
+                  <Button 
+                    onClick={() => navigate(`/improvement-plan/${currentSubject.id}`)}
+                  >
+                    Get Improvement Plan for {currentSubject.name}
+                  </Button>
+                </div>
               </TabsContent>
             </Tabs>
           </div>
           
           {/* Right column */}
           <div className="space-y-6">
+            <RecentResults 
+              results={studentData.recentResults} 
+              title="Recent Results"
+              showViewAll={true}
+            />
+            
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg">Recent Results</CardTitle>
+                <CardTitle className="text-lg">Quick Actions</CardTitle>
               </CardHeader>
-              <CardContent>
-                <RecentResults results={studentData.recentResults} />
+              <CardContent className="space-y-2">
+                <Button 
+                  variant="outline" 
+                  className="w-full justify-start"
+                  onClick={() => navigate('/quiz-results')}
+                >
+                  View All Quiz Results
+                </Button>
+                <Button 
+                  variant="outline" 
+                  className="w-full justify-start"
+                  onClick={() => navigate('/improvement-plan/1')}
+                >
+                  Get Math Improvement Plan
+                </Button>
+                <Button 
+                  variant="outline" 
+                  className="w-full justify-start"
+                  onClick={() => navigate('/subject-progress/1')}
+                >
+                  View Math Progress
+                </Button>
               </CardContent>
             </Card>
           </div>

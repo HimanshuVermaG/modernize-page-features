@@ -5,6 +5,7 @@ import UpcomingEvents from "@/components/dashboard/UpcomingEvents";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
 import ProgressOverview from "@/components/dashboard/ProgressOverview";
 import DashboardContent from "@/components/dashboard/DashboardContent";
+import PersonalizedRecommendations from "@/components/dashboard/PersonalizedRecommendations";
 
 const StudentDashboard = () => {
   const [greeting, setGreeting] = useState("");
@@ -46,6 +47,32 @@ const StudentDashboard = () => {
     { name: "Hindi", progress: 65 },
     { name: "G.S.", progress: 80 },
   ];
+  
+  const recommendations = [
+    {
+      id: 1,
+      subject: "English",
+      score: 55,
+      recommendedTests: [
+        { id: 1, name: "Grammar Practice Set", path: "/questions/2/1" },
+        { id: 2, name: "Vocabulary Builder", path: "/questions/2/2" }
+      ]
+    },
+    {
+      id: 3,
+      subject: "Hindi",
+      score: 65,
+      recommendedTests: [
+        { id: 1, name: "Comprehension Practice", path: "/questions/3/1" }
+      ]
+    },
+    {
+      id: 4,
+      subject: "Math",
+      score: 85,
+      recommendedTests: []
+    }
+  ];
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -68,6 +95,8 @@ const StudentDashboard = () => {
               tests={tests} 
               results={results} 
             />
+            
+            <PersonalizedRecommendations recommendations={recommendations} />
           </div>
           
           <div className="space-y-6">

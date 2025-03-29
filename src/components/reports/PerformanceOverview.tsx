@@ -3,7 +3,7 @@ import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Trophy, TrendingUp } from "lucide-react";
-import LineChart from "@/components/charts/LineChart";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 interface PerformanceOverviewProps {
   score: number;
@@ -79,12 +79,30 @@ const PerformanceOverview = ({
           <CardTitle className="text-sm font-medium">Progress Over Time</CardTitle>
         </CardHeader>
         <CardContent>
-          <LineChart
-            data={progressData}
-            xAxisKey="month"
-            lines={[{ dataKey: "score", name: "Score", color: "#8B5CF6" }]}
-            className="h-[200px]"
-          />
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Month</TableHead>
+                <TableHead className="text-right">Score</TableHead>
+                <TableHead className="text-right">Change</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {progressData.map((item, index) => {
+                const previousScore = index > 0 ? progressData[index - 1].score : item.score;
+                const change = item.score - previousScore;
+                return (
+                  <TableRow key={index}>
+                    <TableCell>{item.month}</TableCell>
+                    <TableCell className="text-right">{item.score}%</TableCell>
+                    <TableCell className={`text-right ${change > 0 ? "text-green-500" : change < 0 ? "text-red-500" : ""}`}>
+                      {change !== 0 && (change > 0 ? "+" : "")}{change !== 0 ? change + "%" : "-"}
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
         </CardContent>
       </Card>
     </div>

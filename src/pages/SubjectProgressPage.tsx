@@ -6,8 +6,6 @@ import { Button } from "@/components/ui/button";
 import { ChevronLeft } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import LineChart from "@/components/charts/LineChart";
-import AreaChart from "@/components/charts/AreaChart";
 
 const SubjectProgressPage = () => {
   const { subjectId } = useParams<{ subjectId: string }>();
@@ -73,17 +71,31 @@ const SubjectProgressPage = () => {
               <CardTitle className="text-lg">Progress Over Time</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="h-[300px]">
-                <LineChart
-                  data={subjectData.weeklyProgress}
-                  xAxisKey="week"
-                  lines={[
-                    { dataKey: "score", name: "Your Score", color: subjectData.color },
-                    { dataKey: "avgScore", name: "Class Average", color: "#94A3B8" }
-                  ]}
-                  showGrid={true}
-                />
-              </div>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Week</TableHead>
+                    <TableHead className="text-right">Your Score</TableHead>
+                    <TableHead className="text-right">Class Average</TableHead>
+                    <TableHead className="text-right">Difference</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {subjectData.weeklyProgress.map((week, index) => {
+                    const difference = week.score - week.avgScore;
+                    return (
+                      <TableRow key={index}>
+                        <TableCell>{week.week}</TableCell>
+                        <TableCell className="text-right">{week.score}%</TableCell>
+                        <TableCell className="text-right">{week.avgScore}%</TableCell>
+                        <TableCell className={`text-right ${difference > 0 ? "text-green-600" : difference < 0 ? "text-red-600" : ""}`}>
+                          {difference > 0 ? "+" : ""}{difference}%
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
             </CardContent>
           </Card>
           
@@ -92,35 +104,32 @@ const SubjectProgressPage = () => {
               <CardTitle className="text-lg">Topic Progress</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="h-[300px]">
-                <AreaChart
-                  data={subjectData.topicProgress}
-                  xAxisKey="topic"
-                  areas={[
-                    { 
-                      dataKey: "initial", 
-                      name: "Initial Score", 
-                      color: "#CBD5E1", 
-                      stackId: "1" 
-                    },
-                    { 
-                      dataKey: "current", 
-                      name: "Current Score", 
-                      color: subjectData.color, 
-                      stackId: "2" 
-                    },
-                    { 
-                      dataKey: "target", 
-                      name: "Target Score", 
-                      color: "#94A3B8", 
-                      stackId: "3",
-                      fillOpacity: 0,
-                      strokeDasharray: "4 4" 
-                    }
-                  ]}
-                  showGrid={true}
-                />
-              </div>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Topic</TableHead>
+                    <TableHead className="text-right">Initial Score</TableHead>
+                    <TableHead className="text-right">Current Score</TableHead>
+                    <TableHead className="text-right">Target Score</TableHead>
+                    <TableHead className="text-right">Improvement</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {subjectData.topicProgress.map((topic, index) => {
+                    const improvement = topic.current - topic.initial;
+                    const targetGap = topic.target - topic.current;
+                    return (
+                      <TableRow key={index}>
+                        <TableCell>{topic.topic}</TableCell>
+                        <TableCell className="text-right">{topic.initial}%</TableCell>
+                        <TableCell className="text-right">{topic.current}%</TableCell>
+                        <TableCell className="text-right">{topic.target}%</TableCell>
+                        <TableCell className="text-right text-green-600">+{improvement}%</TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
             </CardContent>
           </Card>
           

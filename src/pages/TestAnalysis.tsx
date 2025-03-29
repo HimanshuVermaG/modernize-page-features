@@ -6,10 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Download, Share2, Printer } from "lucide-react";
 import { motion } from "framer-motion";
-import ComposedChart from "@/components/charts/ComposedChart";
-import BarChart from "@/components/charts/BarChart";
-import PieChart from "@/components/charts/PieChart";
-import LineChart from "@/components/charts/LineChart";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import PageContainer from "@/components/layout/PageContainer";
 import PageHeader from "@/components/layout/PageHeader";
 
@@ -67,20 +64,6 @@ const TestAnalysis = () => {
     { month: "Apr", score: 80 },
     { month: "May", score: 85 }
   ];
-  
-  // Custom shape renderer for the scatter chart
-  const renderScatterShape = (props: any): React.ReactElement => {
-    const { cx, cy } = props;
-    const entry = props.payload;
-    return (
-      <circle 
-        cx={cx} 
-        cy={cy} 
-        r={5} 
-        fill={entry.result === "correct" ? "#10B981" : "#EF4444"} 
-      />
-    );
-  };
   
   return (
     <PageContainer>
@@ -159,9 +142,26 @@ const TestAnalysis = () => {
                   <CardTitle className="text-sm font-medium">Question Difficulty</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="h-[250px]">
-                    <PieChart data={testData.questionDifficulty} />
-                  </div>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Difficulty</TableHead>
+                        <TableHead className="text-right">Count</TableHead>
+                        <TableHead className="text-right">Percentage</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {testData.questionDifficulty.map((item, index) => (
+                        <TableRow key={index}>
+                          <TableCell>{item.name}</TableCell>
+                          <TableCell className="text-right">{item.value}</TableCell>
+                          <TableCell className="text-right">
+                            {Math.round((item.value / testData.totalQuestions) * 100)}%
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
                 </CardContent>
               </Card>
               
@@ -170,13 +170,24 @@ const TestAnalysis = () => {
                   <CardTitle className="text-sm font-medium">Performance by Topic</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="h-[250px]">
-                    <BarChart 
-                      data={testData.topicBreakdown}
-                      xAxisKey="name"
-                      bars={[{ dataKey: "score", name: "Score", color: "#8B5CF6" }]}
-                    />
-                  </div>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Topic</TableHead>
+                        <TableHead className="text-right">Questions</TableHead>
+                        <TableHead className="text-right">Score</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {testData.topicBreakdown.map((item, index) => (
+                        <TableRow key={index}>
+                          <TableCell>{item.name}</TableCell>
+                          <TableCell className="text-right">{item.questions}</TableCell>
+                          <TableCell className="text-right">{item.score}%</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
                 </CardContent>
               </Card>
             </TabsContent>
@@ -187,19 +198,26 @@ const TestAnalysis = () => {
                   <CardTitle className="text-sm font-medium">Time per Question</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="h-[300px]">
-                    <ComposedChart
-                      data={testData.timePerQuestion}
-                      xAxisKey="id"
-                      bars={[{ dataKey: "time", name: "Time (seconds)", color: "#3B82F6" }]}
-                      scatters={[{ 
-                        dataKey: "time", 
-                        name: "result",
-                        renderDot: renderScatterShape
-                      }]}
-                      showGrid={true}
-                    />
-                  </div>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Question</TableHead>
+                        <TableHead className="text-right">Time (seconds)</TableHead>
+                        <TableHead className="text-right">Result</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {testData.timePerQuestion.map((item) => (
+                        <TableRow key={item.id}>
+                          <TableCell>Question {item.id}</TableCell>
+                          <TableCell className="text-right">{item.time}</TableCell>
+                          <TableCell className={`text-right ${item.result === "correct" ? "text-green-600" : "text-red-600"}`}>
+                            {item.result === "correct" ? "Correct" : "Wrong"}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
                   <div className="mt-4 text-sm text-center text-muted-foreground">
                     Average time per question: <span className="font-medium">{averageTime.toFixed(1)} seconds</span>
                   </div>
@@ -213,13 +231,22 @@ const TestAnalysis = () => {
                   <CardTitle className="text-sm font-medium">Score Progress</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="h-[250px]">
-                    <LineChart
-                      data={progressData}
-                      xAxisKey="month"
-                      lines={[{ dataKey: "score", name: "Score", color: "#8B5CF6" }]}
-                    />
-                  </div>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Month</TableHead>
+                        <TableHead className="text-right">Score</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {progressData.map((item, index) => (
+                        <TableRow key={index}>
+                          <TableCell>{item.month}</TableCell>
+                          <TableCell className="text-right">{item.score}%</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
                 </CardContent>
               </Card>
             </TabsContent>

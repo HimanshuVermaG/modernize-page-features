@@ -5,8 +5,7 @@ import { Navbar } from "@/components/Navbar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import BarChart from "@/components/charts/BarChart";
-import PieChart from "@/components/charts/PieChart";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 const QuizResultDetails = () => {
   const { resultId } = useParams();
@@ -62,15 +61,30 @@ const QuizResultDetails = () => {
                 <CardTitle className="text-lg">Performance by Topic</CardTitle>
               </CardHeader>
               <CardContent>
-                <BarChart
-                  data={resultData.topicPerformance}
-                  xAxisKey="name"
-                  bars={[
-                    { dataKey: "correct", name: "Correct", color: "#10B981" },
-                    { dataKey: "incorrect", name: "Incorrect", color: "#EF4444" }
-                  ]}
-                  showGrid={true}
-                />
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Topic</TableHead>
+                      <TableHead className="text-right">Correct</TableHead>
+                      <TableHead className="text-right">Incorrect</TableHead>
+                      <TableHead className="text-right">Success Rate</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {resultData.topicPerformance.map((topic, index) => {
+                      const total = topic.correct + topic.incorrect;
+                      const rate = Math.round((topic.correct / total) * 100);
+                      return (
+                        <TableRow key={index}>
+                          <TableCell>{topic.name}</TableCell>
+                          <TableCell className="text-right text-green-600">{topic.correct}</TableCell>
+                          <TableCell className="text-right text-red-600">{topic.incorrect}</TableCell>
+                          <TableCell className="text-right font-medium">{rate}%</TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
               </CardContent>
             </Card>
             
@@ -112,15 +126,31 @@ const QuizResultDetails = () => {
                   <span className="text-sm text-gray-500">Time Spent</span>
                   <span className="font-medium">{resultData.timeSpent}</span>
                 </div>
-                <div className="flex justify-between items-center">
+                <div className="flex justify-between items-center pb-2 border-b">
                   <span className="text-sm text-gray-500">Questions</span>
                   <span className="font-medium">{resultData.correctAnswers}/{resultData.totalQuestions} correct</span>
                 </div>
                 
-                <PieChart 
-                  data={resultData.answerDistribution}
-                  showLegend={true}
-                />
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Answer Type</TableHead>
+                      <TableHead className="text-right">Count</TableHead>
+                      <TableHead className="text-right">Percentage</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {resultData.answerDistribution.map((item, index) => (
+                      <TableRow key={index}>
+                        <TableCell>{item.name}</TableCell>
+                        <TableCell className="text-right">{item.value}</TableCell>
+                        <TableCell className="text-right">
+                          {Math.round((item.value / resultData.totalQuestions) * 100)}%
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
               </CardContent>
             </Card>
             

@@ -39,8 +39,8 @@ interface ComposedChartProps {
   scatters?: Array<{
     dataKey: string;
     name: string;
-    color?: string; // Add optional color property
-    renderDot?: (props: any) => React.ReactElement; // Change return type to ReactElement
+    color?: string; 
+    renderDot?: (props: any) => React.ReactElement;
   }>;
   aspectRatio?: number;
   showGrid?: boolean;
@@ -64,9 +64,8 @@ const ComposedChart = ({
   const chartConfig = [...bars, ...lines, ...areas, ...scatters].reduce((config, item) => {
     if (!item.dataKey) return config;
     
-    // Check if item has color property before using it
-    const hasColor = 'color' in item;
-    const itemColor = hasColor ? item.color : undefined;
+    // Check if the item has a color property in a type-safe way
+    const itemColor = ('color' in item) ? item.color : undefined;
     
     return {
       ...config,
@@ -126,19 +125,23 @@ const ComposedChart = ({
               />
             ))}
             
-            {scatters.map((scatter, index) => (
-              <Scatter
-                key={`scatter-${index}`}
-                dataKey={scatter.dataKey}
-                name={scatter.name}
-                fill={scatter.color} // Use color if provided
-                shape={scatter.renderDot ? (props) => {
-                  // Ensure renderDot returns a React element
-                  const element = scatter.renderDot?.(props);
-                  return element || null;
-                } : undefined}
-              />
-            ))}
+            {scatters.map((scatter, index) => {
+              // Type-safe way to access the optional color property
+              const scatterColor = scatter.color;
+              
+              return (
+                <Scatter
+                  key={`scatter-${index}`}
+                  dataKey={scatter.dataKey}
+                  name={scatter.name}
+                  fill={scatterColor}
+                  shape={scatter.renderDot ? (props) => {
+                    const element = scatter.renderDot?.(props);
+                    return element || null;
+                  } : undefined}
+                />
+              );
+            })}
           </RechartsComposedChart>
         </ResponsiveContainer>
       </ChartContainer>

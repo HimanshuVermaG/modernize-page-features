@@ -1,67 +1,72 @@
 
 import React from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { Navbar } from "@/components/Navbar";
+import { useParams, Link } from "react-router-dom";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ChevronLeft, ArrowRight, Clock, BarChart2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
-import PDFResources from "@/components/quiz/PDFResources";
-import LineChart from "@/components/charts/LineChart";
+import { ArrowLeft, Download, Share2, Printer } from "lucide-react";
+import { motion } from "framer-motion";
 import ComposedChart from "@/components/charts/ComposedChart";
+import BarChart from "@/components/charts/BarChart";
+import PieChart from "@/components/charts/PieChart";
+import LineChart from "@/components/charts/LineChart";
+import PageContainer from "@/components/layout/PageContainer";
+import PageHeader from "@/components/layout/PageHeader";
 
 const TestAnalysis = () => {
-  const { testId } = useParams();
-  const navigate = useNavigate();
+  const { testId } = useParams<{ testId: string }>();
   
-  // This would typically come from an API
+  // Mock data for the test
   const testData = {
-    id: Number(testId) || 1,
-    title: "Math Test - Basic Algebra",
-    date: "November 15, 2023",
-    score: 42,
-    maxScore: 50,
-    completionTime: "28 minutes",
-    averageTime: "1.4 minutes per question",
-    weakAreas: [
-      { topic: "Quadratic Equations", accuracy: 60 },
-      { topic: "Word Problems", accuracy: 45 },
-      { topic: "Inequalities", accuracy: 70 }
+    id: testId,
+    name: "Mathematics Mid-Term Test",
+    date: "2023-05-15",
+    score: 85,
+    totalQuestions: 30,
+    correctAnswers: 25,
+    wrongAnswers: 5,
+    timeMinutes: 45,
+    topicBreakdown: [
+      { name: "Algebra", score: 90, questions: 10 },
+      { name: "Geometry", score: 80, questions: 8 },
+      { name: "Calculus", score: 70, questions: 7 },
+      { name: "Statistics", score: 100, questions: 5 }
     ],
-    questionTimeData: [
-      { id: 1, time: 45, difficulty: "Easy", correct: true },
-      { id: 2, time: 90, difficulty: "Medium", correct: true },
-      { id: 3, time: 120, difficulty: "Hard", correct: false },
-      { id: 4, time: 60, difficulty: "Medium", correct: true },
-      { id: 5, time: 150, difficulty: "Hard", correct: false },
-      { id: 6, time: 40, difficulty: "Easy", correct: true },
-      { id: 7, time: 70, difficulty: "Medium", correct: true },
-      { id: 8, time: 100, difficulty: "Medium", correct: false },
-      { id: 9, time: 30, difficulty: "Easy", correct: true },
-      { id: 10, time: 80, difficulty: "Medium", correct: true },
+    questionDifficulty: [
+      { name: "Easy", value: 12, color: "#10B981" },
+      { name: "Medium", value: 10, color: "#3B82F6" },
+      { name: "Hard", value: 8, color: "#EF4444" }
     ],
-    performanceOverTime: [
-      { attempt: 1, score: 65 },
-      { attempt: 2, score: 72 },
-      { attempt: 3, score: 68 },
-      { attempt: 4, score: 78 },
-      { attempt: 5, score: 84 },
+    timePerQuestion: [
+      { id: 1, time: 30, result: "correct" },
+      { id: 2, time: 45, result: "correct" },
+      { id: 3, time: 60, result: "correct" },
+      { id: 4, time: 90, result: "wrong" },
+      { id: 5, time: 75, result: "correct" },
+      { id: 6, time: 120, result: "wrong" },
+      { id: 7, time: 30, result: "correct" },
+      { id: 8, time: 60, result: "correct" },
+      { id: 9, time: 45, result: "correct" },
+      { id: 10, time: 105, result: "wrong" },
+      { id: 11, time: 90, result: "correct" },
+      { id: 12, time: 55, result: "correct" },
+      { id: 13, time: 35, result: "correct" },
+      { id: 14, time: 40, result: "correct" },
+      { id: 15, time: 65, result: "wrong" }
     ],
-    pdfResources: [
-      {
-        id: 1,
-        title: "Algebraic Expressions Guide",
-        description: "Complete reference for algebraic expressions and operations",
-        url: "https://www.example.com/pdfs/algebraic-expressions.pdf"
-      },
-      {
-        id: 2,
-        title: "Word Problem Solving Techniques",
-        description: "Strategies for tackling math word problems effectively",
-        url: "https://www.example.com/pdfs/word-problems.pdf"
-      }
-    ]
+    wrongQuestions: [4, 6, 10, 15]
   };
+  
+  const averageTime = testData.timePerQuestion.reduce((acc, curr) => acc + curr.time, 0) / testData.timePerQuestion.length;
+  
+  // Progress data for line chart
+  const progressData = [
+    { month: "Jan", score: 65 },
+    { month: "Feb", score: 70 },
+    { month: "Mar", score: 75 },
+    { month: "Apr", score: 80 },
+    { month: "May", score: 85 }
+  ];
   
   // Custom shape renderer for the scatter chart
   const renderScatterShape = (props: any): React.ReactElement => {
@@ -71,182 +76,200 @@ const TestAnalysis = () => {
       <circle 
         cx={cx} 
         cy={cy} 
-        r={6} 
-        fill={entry.correct ? "#10B981" : "#EF4444"} 
+        r={5} 
+        fill={entry.result === "correct" ? "#10B981" : "#EF4444"} 
       />
     );
   };
   
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <Navbar />
-      <div className="container mx-auto px-4 py-6">
-        <Button 
-          variant="ghost" 
-          size="sm"
-          onClick={() => navigate(-1)}
-          className="mb-4"
-        >
-          <ChevronLeft className="mr-1 h-4 w-4" />
-          Back
+    <PageContainer>
+      <PageHeader title="Test Analysis">
+        <Button variant="outline" size="sm" asChild className="mr-2">
+          <Link to="/quiz-results">
+            <ArrowLeft className="h-4 w-4 mr-1" />
+            Back to Results
+          </Link>
         </Button>
-        
-        <div className="flex flex-col md:flex-row md:items-center justify-between mb-6">
-          <div>
-            <h1 className="text-2xl font-bold">{testData.title}</h1>
-            <p className="text-gray-500 dark:text-gray-400">Completed on {testData.date}</p>
-          </div>
-          <div className="mt-4 md:mt-0 bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300 px-4 py-2 rounded-lg flex items-center">
-            <span className="font-medium">Score: {testData.score}/{testData.maxScore}</span>
-            <span className="ml-2 text-sm">({Math.round((testData.score / testData.maxScore) * 100)}%)</span>
-          </div>
-        </div>
-        
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Card>
-                <CardContent className="pt-6">
-                  <div className="flex items-center mb-4">
-                    <div className="p-2 rounded-full bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-300 mr-3">
-                      <Clock className="h-5 w-5" />
+      </PageHeader>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* Left column - Overview */}
+        <div className="md:col-span-2 space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-xl">{testData.name}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="text-center p-4 bg-primary/10 rounded-lg">
+                  <div className="text-2xl font-bold">{testData.score}%</div>
+                  <div className="text-sm text-muted-foreground">Score</div>
+                </div>
+                <div className="text-center p-4 bg-green-500/10 rounded-lg">
+                  <div className="text-2xl font-bold">{testData.correctAnswers}</div>
+                  <div className="text-sm text-muted-foreground">Correct</div>
+                </div>
+                <div className="text-center p-4 bg-red-500/10 rounded-lg">
+                  <div className="text-2xl font-bold">{testData.wrongAnswers}</div>
+                  <div className="text-sm text-muted-foreground">Wrong</div>
+                </div>
+                <div className="text-center p-4 bg-blue-500/10 rounded-lg">
+                  <div className="text-2xl font-bold">{testData.timeMinutes} min</div>
+                  <div className="text-sm text-muted-foreground">Time</div>
+                </div>
+              </div>
+              
+              <div className="mt-6">
+                <h3 className="text-lg font-medium mb-2">Topic Breakdown</h3>
+                {testData.topicBreakdown.map((topic, index) => (
+                  <div key={index} className="mb-3">
+                    <div className="flex justify-between mb-1 text-sm">
+                      <span>{topic.name}</span>
+                      <span className="font-medium">{topic.score}%</span>
                     </div>
-                    <div>
-                      <h3 className="font-medium">Time Analysis</h3>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">
-                        Total time: {testData.completionTime}
-                      </p>
+                    <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
+                      <div 
+                        className="bg-primary h-2.5 rounded-full" 
+                        style={{ width: `${topic.score}%` }}
+                      ></div>
+                    </div>
+                    <div className="text-xs text-muted-foreground mt-1">
+                      {topic.questions} questions
                     </div>
                   </div>
-                  <p className="text-sm mb-2">Average time per question</p>
-                  <p className="font-medium text-lg">{testData.averageTime}</p>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Tabs defaultValue="questions">
+            <TabsList className="grid grid-cols-3 mb-4">
+              <TabsTrigger value="questions">Questions</TabsTrigger>
+              <TabsTrigger value="time">Time Analysis</TabsTrigger>
+              <TabsTrigger value="progress">Progress</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="questions" className="space-y-4">
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-medium">Question Difficulty</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="h-[250px]">
+                    <PieChart data={testData.questionDifficulty} />
+                  </div>
                 </CardContent>
               </Card>
               
               <Card>
-                <CardContent className="pt-6">
-                  <div className="flex items-center mb-4">
-                    <div className="p-2 rounded-full bg-purple-100 text-purple-600 dark:bg-purple-900 dark:text-purple-300 mr-3">
-                      <BarChart2 className="h-5 w-5" />
-                    </div>
-                    <div>
-                      <h3 className="font-medium">Accuracy Analysis</h3>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">
-                        Overall accuracy: {Math.round((testData.score / testData.maxScore) * 100)}%
-                      </p>
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-3">
-                    {testData.weakAreas.map((area, index) => (
-                      <div key={index}>
-                        <div className="flex justify-between text-sm mb-1">
-                          <span>{area.topic}</span>
-                          <span className={`${
-                            area.accuracy >= 70 ? 'text-green-600 dark:text-green-400' :
-                            area.accuracy >= 50 ? 'text-amber-600 dark:text-amber-400' :
-                            'text-red-600 dark:text-red-400'
-                          }`}>
-                            {area.accuracy}%
-                          </span>
-                        </div>
-                        <Progress value={area.accuracy} className="h-1.5" />
-                      </div>
-                    ))}
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-medium">Performance by Topic</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="h-[250px]">
+                    <BarChart 
+                      data={testData.topicBreakdown}
+                      xAxisKey="name"
+                      bars={[{ dataKey: "score", name: "Score", color: "#8B5CF6" }]}
+                    />
                   </div>
                 </CardContent>
               </Card>
-            </div>
+            </TabsContent>
             
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Performance Over Time</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <LineChart
-                  data={testData.performanceOverTime}
-                  xAxisKey="attempt"
-                  lines={[{ dataKey: "score", name: "Score (%)", color: "#8B5CF6" }]}
-                  showGrid={true}
-                />
-              </CardContent>
-            </Card>
+            <TabsContent value="time" className="space-y-4">
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-medium">Time per Question</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="h-[300px]">
+                    <ComposedChart
+                      data={testData.timePerQuestion}
+                      xAxisKey="id"
+                      bars={[{ dataKey: "time", name: "Time (seconds)", color: "#3B82F6" }]}
+                      scatters={[{ 
+                        dataKey: "time", 
+                        name: "result",
+                        renderDot: renderScatterShape
+                      }]}
+                      showGrid={true}
+                    />
+                  </div>
+                  <div className="mt-4 text-sm text-center text-muted-foreground">
+                    Average time per question: <span className="font-medium">{averageTime.toFixed(1)} seconds</span>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
             
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Time Spent vs Question Difficulty</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ComposedChart
-                  data={testData.questionTimeData}
-                  xAxisKey="id"
-                  bars={[{ dataKey: "time", name: "Time (seconds)", color: "#3B82F6" }]}
-                  scatters={[{ 
-                    dataKey: "time", 
-                    name: "result",
-                    renderDot: renderScatterShape
-                  }]}
-                  showGrid={true}
-                />
-                <div className="flex justify-center mt-4 gap-4 text-sm">
-                  <div className="flex items-center">
-                    <div className="w-3 h-3 rounded-full bg-green-500 mr-1"></div>
-                    <span>Correct</span>
+            <TabsContent value="progress" className="space-y-4">
+              <Card>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-medium">Score Progress</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="h-[250px]">
+                    <LineChart
+                      data={progressData}
+                      xAxisKey="month"
+                      lines={[{ dataKey: "score", name: "Score", color: "#8B5CF6" }]}
+                    />
                   </div>
-                  <div className="flex items-center">
-                    <div className="w-3 h-3 rounded-full bg-red-500 mr-1"></div>
-                    <span>Incorrect</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
+        </div>
+        
+        {/* Right column - Actions and Related */}
+        <div className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Actions</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              <Button className="w-full flex items-center justify-center gap-2" variant="outline">
+                <Download className="h-4 w-4" />
+                Download Report
+              </Button>
+              <Button className="w-full flex items-center justify-center gap-2" variant="outline">
+                <Printer className="h-4 w-4" />
+                Print Analysis
+              </Button>
+              <Button className="w-full flex items-center justify-center gap-2" variant="outline">
+                <Share2 className="h-4 w-4" />
+                Share Results
+              </Button>
+            </CardContent>
+          </Card>
           
-          <div className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Improvement Areas</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-3">
-                  {testData.weakAreas.map((area, index) => (
-                    <div key={index} className="p-3 bg-gray-100 dark:bg-gray-800 rounded-lg">
-                      <div className="flex justify-between items-center mb-2">
-                        <h4 className="font-medium">{area.topic}</h4>
-                        <span className={`text-sm px-2 py-1 rounded ${
-                          area.accuracy >= 70 ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' :
-                          area.accuracy >= 50 ? 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-300' :
-                          'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
-                        }`}>
-                          {area.accuracy}% accuracy
-                        </span>
-                      </div>
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        className="w-full"
-                        onClick={() => navigate(`/improvement-plan/1`)}
-                      >
-                        Practice {area.topic} <ArrowRight className="ml-1 h-4 w-4" />
-                      </Button>
-                    </div>
-                  ))}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Areas for Improvement</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {testData.wrongQuestions.map(qNumber => (
+                <div key={qNumber} className="border-b pb-3 last:border-b-0 last:pb-0">
+                  <div className="font-medium">Question {qNumber}</div>
+                  <p className="text-sm text-muted-foreground">
+                    Review {testData.topicBreakdown.find((_, i) => i % testData.wrongQuestions.length === testData.wrongQuestions.indexOf(qNumber) % testData.wrongQuestions.length)?.name} concepts
+                  </p>
+                  <Button size="sm" variant="link" className="p-0 h-auto mt-1">
+                    View Question
+                  </Button>
                 </div>
-                
-                <Button 
-                  className="w-full" 
-                  onClick={() => navigate(`/improvement-plan/1`)}
-                >
-                  View Full Improvement Plan
-                </Button>
-              </CardContent>
-            </Card>
-            
-            <PDFResources resources={testData.pdfResources} />
-          </div>
+              ))}
+              
+              <Button className="w-full mt-2">
+                Get Improvement Plan
+              </Button>
+            </CardContent>
+          </Card>
         </div>
       </div>
-    </div>
+    </PageContainer>
   );
 };
 

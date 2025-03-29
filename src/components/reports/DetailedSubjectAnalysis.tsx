@@ -19,7 +19,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
-import { AspectRatio } from "@/components/ui/aspect-ratio";
 
 interface SubjectAnalysisProps {
   subject: {
@@ -58,7 +57,7 @@ const DetailedSubjectAnalysis = ({ subject }: SubjectAnalysisProps) => {
           </TabsList>
           
           <TabsContent value="progress">
-            <AspectRatio ratio={16/4} className="mb-4">
+            <div className="h-[200px] mb-4">
               <ChartContainer
                 config={{
                   score: {
@@ -96,7 +95,7 @@ const DetailedSubjectAnalysis = ({ subject }: SubjectAnalysisProps) => {
                   />
                 </LineChart>
               </ChartContainer>
-            </AspectRatio>
+            </div>
             <Button 
               variant="outline" 
               size="sm" 
@@ -108,7 +107,7 @@ const DetailedSubjectAnalysis = ({ subject }: SubjectAnalysisProps) => {
           </TabsContent>
           
           <TabsContent value="weak-areas">
-            <AspectRatio ratio={16/4} className="mb-4">
+            <div className="h-[200px] mb-4">
               <ChartContainer
                 config={{
                   score: {
@@ -146,7 +145,7 @@ const DetailedSubjectAnalysis = ({ subject }: SubjectAnalysisProps) => {
                   />
                 </BarChart>
               </ChartContainer>
-            </AspectRatio>
+            </div>
             <Button 
               variant="outline" 
               size="sm" 
@@ -158,7 +157,7 @@ const DetailedSubjectAnalysis = ({ subject }: SubjectAnalysisProps) => {
           </TabsContent>
           
           <TabsContent value="distribution">
-            <AspectRatio ratio={16/4} className="mb-4 flex justify-center">
+            <div className="h-[200px] mb-4 flex justify-center">
               <ChartContainer
                 config={{
                   value: {
@@ -166,11 +165,11 @@ const DetailedSubjectAnalysis = ({ subject }: SubjectAnalysisProps) => {
                   },
                 }}
               >
-                <PieChart>
+                <PieChart width={230} height={200}>
                   <Pie
                     data={subject.quizDistribution}
-                    cx="50%"
-                    cy="50%"
+                    cx={115}
+                    cy={100}
                     innerRadius={60}
                     outerRadius={80}
                     paddingAngle={2}
@@ -185,7 +184,7 @@ const DetailedSubjectAnalysis = ({ subject }: SubjectAnalysisProps) => {
                   <ChartTooltip content={<ChartTooltipContent />} />
                 </PieChart>
               </ChartContainer>
-            </AspectRatio>
+            </div>
             <Button 
               variant="outline" 
               size="sm" 

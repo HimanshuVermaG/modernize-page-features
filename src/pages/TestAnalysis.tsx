@@ -235,9 +235,14 @@ const TestAnalysis = () => {
                           shape={(props) => {
                             const { cx, cy } = props;
                             const entry = props.payload;
-                            const color = entry.correct ? "#10B981" : "#EF4444";
+                            // Use shape to conditionally render based on the correct property
                             return (
-                              <circle cx={cx} cy={cy} r={6} fill={color} />
+                              <circle 
+                                cx={cx} 
+                                cy={cy} 
+                                r={6} 
+                                fill={entry.correct ? "#10B981" : "#EF4444"} 
+                              />
                             );
                           }}
                           name="result"

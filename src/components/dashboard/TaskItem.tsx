@@ -19,7 +19,7 @@ interface TaskItemProps {
 
 const TaskItem = ({ task, index }: TaskItemProps) => {
   return (
-    <Tooltip key={task.id}>
+    <Tooltip>
       <TooltipTrigger asChild>
         <motion.div
           initial={{ opacity: 0, x: 20 }}

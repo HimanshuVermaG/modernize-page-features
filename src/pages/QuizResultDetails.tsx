@@ -152,7 +152,7 @@ const QuizResultDetails = () => {
                   <span className="font-medium">{resultData.correctAnswers}/{resultData.totalQuestions} correct</span>
                 </div>
                 
-                <AspectRatio ratio={16/9} className="mt-4">
+                <AspectRatio ratio={16/4} className="mt-4">
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
                       <Pie
